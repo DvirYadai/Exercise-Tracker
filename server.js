@@ -84,8 +84,8 @@ app.get("/api/exercise/log", (req, res) => {
       const logs = user.log;
       logs.forEach((element) => {
         if (
-          element.date.getTime() >= query.from.getTime() &&
-          element.date.getTime() <= query.to.getTime()
+          element.date.getTime() >= new Date(query.from).getTime() &&
+          element.date.getTime() <= new Date(query.to).getTime()
         ) {
           element.date = element.date.toDateString();
           return element;
@@ -107,8 +107,8 @@ app.get("/api/exercise/log", (req, res) => {
       const logs = user.log;
       logs.forEach((element) => {
         if (
-          element.date.getTime() >= query.from.getTime() &&
-          element.date.getTime() <= query.to.getTime()
+          element.date.getTime() >= new Date(query.from).getTime() &&
+          element.date.getTime() <= new Date(query.to).getTime()
         ) {
           element.date = element.date.toDateString();
           return element;
