@@ -133,7 +133,7 @@ app.get("/api/exercise/log", (req, res) => {
         return newObj;
       });
       return res.status(200).json({
-        _id: query.userId,
+        _id: mongoose.Types.ObjectId(query.userId),
         username: user.username,
         count: user.count,
         log: logs,
