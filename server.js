@@ -88,17 +88,21 @@ app.get("/api/exercise/log", (req, res) => {
           element.date.getTime() >= new Date(query.from).getTime() &&
           element.date.getTime() <= new Date(query.to).getTime()
         ) {
-          element.date = element.date.toDateString();
-          return element;
+          const newObj = {
+            description: element.description,
+            duration: element.duration,
+            date: element.date.toDateString(),
+          };
+          return newObj;
         }
       });
       for (let i = 0; i < query.limit; i++) {
         limitLogs.push(logs[i]);
       }
       return res.status(200).json({
-        _id: query.userId,
-        username: res.username,
-        count: res.count,
+        _id: mongoose.Types.ObjectId(query.userId),
+        username: user.username,
+        count: limitLogs.length,
         log: limitLogs,
       });
     });
@@ -110,14 +114,18 @@ app.get("/api/exercise/log", (req, res) => {
           element.date.getTime() >= new Date(query.from).getTime() &&
           element.date.getTime() <= new Date(query.to).getTime()
         ) {
-          element.date = element.date.toDateString();
-          return element;
+          const newObj = {
+            description: element.description,
+            duration: element.duration,
+            date: element.date.toDateString(),
+          };
+          return newObj;
         }
       });
       return res.status(200).json({
-        _id: query.userId,
-        username: res.username,
-        count: res.count,
+        _id: mongoose.Types.ObjectId(query.userId),
+        username: user.username,
+        count: logs.length,
         log: logs,
       });
     });
