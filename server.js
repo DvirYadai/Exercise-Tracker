@@ -79,75 +79,77 @@ app.get("/api/exercise/log", (req, res) => {
   if (!query.userId) {
     return res.status(400).send("query parameters must include userId");
   }
-  if (query.from && query.to && query.limit) {
-    User.findById(query.userId).then((user) => {
-      const logs = user.log;
-      const limitLogs = [];
-      limitLogs = logs.map((element) => {
-        if (
-          element.date.getTime() >= new Date(query.from).getTime() &&
-          element.date.getTime() <= new Date(query.to).getTime()
-        ) {
-          const newObj = {
-            description: element.description,
-            duration: element.duration,
-            date: element.date.toDateString(),
-          };
-          return newObj;
+  User.findById(query.userId)
+    .then((user) => {
+      let logs = user.log;
+      let limitLogs = [];
+      if (query.from && query.to && query.limit) {
+        logs = logs
+          .filter(
+            (element) =>
+              element.date.getTime() >= new Date(query.from).getTime() &&
+              element.date.getTime() <= new Date(query.to).getTime()
+          )
+          .map((obj) => {
+            const newObj = {
+              description: obj.description,
+              duration: obj.duration,
+              date: obj.date.toDateString(),
+            };
+            return newObj;
+          });
+        query.limit = query.limit > logs.length ? logs.length : query.limit;
+        for (let i = 0; i < query.limit; i++) {
+          limitLogs.push(logs[i]);
         }
-      });
-      for (let i = 0; i < query.limit; i++) {
-        limitLogs.push(logs[i]);
+        return res.status(200).json({
+          _id: mongoose.Types.ObjectId(query.userId),
+          username: user.username,
+          count: limitLogs.length,
+          log: limitLogs,
+        });
+      } else if (query.from && query.to && !query.limit) {
+        logs = logs
+          .filter(
+            (element) =>
+              element.date.getTime() >= new Date(query.from).getTime() &&
+              element.date.getTime() <= new Date(query.to).getTime()
+          )
+          .map((obj) => {
+            const newObj = {
+              description: obj.description,
+              duration: obj.duration,
+              date: obj.date.toDateString(),
+            };
+            return newObj;
+          });
+        return res.status(200).json({
+          _id: mongoose.Types.ObjectId(query.userId),
+          username: user.username,
+          count: logs.length,
+          log: logs,
+        });
+      } else {
+        User.findById(query.userId).then((user) => {
+          let logs = user.log;
+          logs = logs.map((element) => {
+            const newObj = {
+              description: element.description,
+              duration: element.duration,
+              date: element.date.toDateString(),
+            };
+            return newObj;
+          });
+          return res.status(200).json({
+            _id: mongoose.Types.ObjectId(query.userId),
+            username: user.username,
+            count: user.count,
+            log: logs,
+          });
+        });
       }
-      return res.status(200).json({
-        _id: mongoose.Types.ObjectId(query.userId),
-        username: user.username,
-        count: limitLogs.length,
-        log: limitLogs,
-      });
-    });
-  } else if (query.from && query.to && !query.limit) {
-    User.findById(query.userId).then((user) => {
-      let logs = user.log;
-      logs = logs.map((element) => {
-        if (
-          element.date.getTime() >= new Date(query.from).getTime() &&
-          element.date.getTime() <= new Date(query.to).getTime()
-        ) {
-          const newObj = {
-            description: element.description,
-            duration: element.duration,
-            date: element.date.toDateString(),
-          };
-          return newObj;
-        }
-      });
-      return res.status(200).json({
-        _id: mongoose.Types.ObjectId(query.userId),
-        username: user.username,
-        count: logs.length,
-        log: logs,
-      });
-    });
-  } else {
-    User.findById(query.userId).then((user) => {
-      let logs = user.log;
-      logs = logs.map((element) => {
-        const newObj = {
-          description: element.description,
-          duration: element.duration,
-          date: element.date.toDateString(),
-        };
-        return newObj;
-      });
-      return res.status(200).json({
-        _id: mongoose.Types.ObjectId(query.userId),
-        username: user.username,
-        count: user.count,
-        log: logs,
-      });
-    });
-  }
+    })
+    .catch(() => res.status(500).send("Id does not valid or exist"));
 });
 
 const listener = app.listen(process.env.PORT || 3000, () => {

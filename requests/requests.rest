@@ -8,3 +8,11 @@ content-type: application/json
 ###
 
 GET http://localhost:3000/api/exercise/users
+
+###
+
+GET http://localhost:3000/api/exercise/log?userId=604a74c608e3fa4ce46e9800&from=2021-03-10&to=2021-03-11
+
+###
+
+GET http://localhost:3000/api/exercise/log?userId=604a74c608e3fa4ce46e9800
