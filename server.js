@@ -56,7 +56,7 @@ app.post("/api/exercise/add", (req, res) => {
     description: body.description,
     duration: Number(body.duration),
     date:
-      body.date === "" ? new Date() : new Date(body.date.replace(/\//g, ",")),
+      body.date === "" ? new Date() : new Date(body.date.replace(/\-/g, ",")),
   };
   User.findByIdAndUpdate(
     body.userId,
