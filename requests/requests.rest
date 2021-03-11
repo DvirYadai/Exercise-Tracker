@@ -2,7 +2,9 @@ POST http://localhost:3000/api/exercise/new-user
 content-type: application/json
 
 {
-    "username": "dvir"
+    "username": "kfir"
 }
 
 ###
+
+GET http://localhost:3000/api/exercise/users

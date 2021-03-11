@@ -34,6 +34,13 @@ app.post("/api/exercise/new-user", (req, res) => {
     .catch((err) => res.status(400).send(err.message));
 });
 
+app.get("/api/exercise/users", (req, res) => {
+  User.find({}, ["_id", "username"])
+    .then((arr) => {
+      return res.status(200).json(arr);
+    })
+    .catch((err) => res.status(500).send(err));
+});
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log("Your app is listening on port " + listener.address().port);
 });
