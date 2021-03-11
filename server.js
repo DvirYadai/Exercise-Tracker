@@ -81,8 +81,8 @@ app.get("/api/exercise/log", (req, res) => {
     return res.status(400).send("query parameters must include userId");
   }
   if (query.from && query.to && query.limit) {
-    User.findById(query.userId).then((res) => {
-      const logs = res.log;
+    User.findById(query.userId).then((user) => {
+      const logs = user.log;
       logs.forEach((element) => {
         if (
           element.date.getTime() >= query.from.getTime() &&
@@ -97,15 +97,15 @@ app.get("/api/exercise/log", (req, res) => {
         limitLogs.push(logs[i]);
       }
       return res.status(200).json({
-        id: userId,
+        id: query.userId,
         username: res.username,
         count: res.count,
         log: limitLogs,
       });
     });
   } else if (query.from && query.to && !query.limit) {
-    User.findById(query.userId).then((res) => {
-      const logs = res.log;
+    User.findById(query.userId).then((user) => {
+      const logs = user.log;
       logs.forEach((element) => {
         if (
           element.date.getTime() >= query.from.getTime() &&
@@ -116,18 +116,18 @@ app.get("/api/exercise/log", (req, res) => {
         }
       });
       return res.status(200).json({
-        id: userId,
+        id: query.userId,
         username: res.username,
         count: res.count,
         log: limitLogs,
       });
     });
   } else {
-    User.findById(query.userId).then((res) => {
-      const logs = res.log;
+    User.findById(query.userId).then((user) => {
+      const logs = user.log;
       logs.forEach((element) => (element.date = element.date.toDateString()));
       return res.status(200).json({
-        id: userId,
+        id: query.userId,
         username: res.username,
         count: res.count,
         log: logs,
