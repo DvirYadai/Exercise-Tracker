@@ -97,7 +97,7 @@ app.get("/api/exercise/log", (req, res) => {
         limitLogs.push(logs[i]);
       }
       return res.status(200).json({
-        id: query.userId,
+        _id: query.userId,
         username: res.username,
         count: res.count,
         log: limitLogs,
@@ -116,7 +116,7 @@ app.get("/api/exercise/log", (req, res) => {
         }
       });
       return res.status(200).json({
-        id: query.userId,
+        _id: query.userId,
         username: res.username,
         count: res.count,
         log: limitLogs,
@@ -127,7 +127,7 @@ app.get("/api/exercise/log", (req, res) => {
       const logs = user.log;
       logs.forEach((element) => (element.date = element.date.toDateString()));
       return res.status(200).json({
-        id: query.userId,
+        _id: query.userId,
         username: res.username,
         count: res.count,
         log: logs,
