@@ -82,7 +82,8 @@ app.get("/api/exercise/log", (req, res) => {
   if (query.from && query.to && query.limit) {
     User.findById(query.userId).then((user) => {
       const logs = user.log;
-      logs.forEach((element) => {
+      const limitLogs = [];
+      limitLogs = logs.map((element) => {
         if (
           element.date.getTime() >= new Date(query.from).getTime() &&
           element.date.getTime() <= new Date(query.to).getTime()
@@ -91,7 +92,6 @@ app.get("/api/exercise/log", (req, res) => {
           return element;
         }
       });
-      const limitLogs = [];
       for (let i = 0; i < query.limit; i++) {
         limitLogs.push(logs[i]);
       }
@@ -104,8 +104,8 @@ app.get("/api/exercise/log", (req, res) => {
     });
   } else if (query.from && query.to && !query.limit) {
     User.findById(query.userId).then((user) => {
-      const logs = user.log;
-      logs.forEach((element) => {
+      let logs = user.log;
+      logs = logs.map((element) => {
         if (
           element.date.getTime() >= new Date(query.from).getTime() &&
           element.date.getTime() <= new Date(query.to).getTime()
@@ -118,13 +118,15 @@ app.get("/api/exercise/log", (req, res) => {
         _id: query.userId,
         username: res.username,
         count: res.count,
-        log: limitLogs,
+        log: logs,
       });
     });
   } else {
     User.findById(query.userId).then((user) => {
-      const logs = user.log;
-      logs.forEach((element) => (element.date = element.date.toDateString()));
+      let logs = user.log;
+      logs = logs.map(
+        (element) => (element.date = element.date.toDateString())
+      );
       return res.status(200).json({
         _id: query.userId,
         username: res.username,
