@@ -44,6 +44,13 @@ app.get("/api/exercise/users", (req, res) => {
 
 app.post("/api/exercise/add", (req, res) => {
   const body = req.body;
+  if (body.userId === "") {
+    return res.status(400).send("Please enter valid user ID");
+  } else if (body.description === "") {
+    return res.status(400).send("Please enter description");
+  } else if (body.duration === "") {
+    return res.status(400).send("Please enter duration");
+  }
   const exercise = {
     description: body.description,
     duration: Number(body.duration),
@@ -51,17 +58,19 @@ app.post("/api/exercise/add", (req, res) => {
   };
   User.findByIdAndUpdate(
     body.userId,
-    { $push: { log: exercise } },
+    { $push: { log: exercise }, $inc: { count: 1 } },
     { new: true }
-  ).then((user) => {
-    res.status(200).json({
-      _id: mongoose.Types.ObjectId(user._id),
-      username: user.username,
-      date: exercise.date,
-      duration: exercise.duration,
-      description: exercise.description,
-    });
-  });
+  )
+    .then((user) => {
+      return res.status(200).json({
+        _id: user._id,
+        username: user.username,
+        date: exercise.date,
+        duration: exercise.duration,
+        description: exercise.description,
+      });
+    })
+    .catch((err) => res.status(500).send(err));
 });
 
 const listener = app.listen(process.env.PORT || 3000, () => {
