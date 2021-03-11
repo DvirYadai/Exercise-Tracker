@@ -26,11 +26,14 @@ const userSchema = new mongoose.Schema({
   },
   count: {
     type: Number,
-    default: 0,
   },
-  log: {
-    type: [],
-  },
+  log: [
+    {
+      description: String,
+      duration: Number,
+      date: Date,
+    },
+  ],
 });
 
 userSchema.plugin(uniqueValidator);

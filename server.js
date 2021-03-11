@@ -21,6 +21,8 @@ app.post("/api/exercise/new-user", (req, res) => {
   }
   const newUser = new User({
     username: username,
+    count: 0,
+    log: [],
   });
   newUser
     .save()
