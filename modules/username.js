@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const url = process.env.MONGODB_URI;
+const url = process.env;
 
 console.log("connecting to", url);
 mongoose
@@ -17,21 +17,6 @@ mongoose
     console.log("error connecting to MongoDB:", error.message);
   });
 
-const usernameSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    require: true,
-  },
-  count: {
-    type: Number,
-    default: 0,
-  },
-  log: {
-    type: [logSchema],
-    default: [logSchema],
-  },
-});
-
 const logSchema = new mongoose.Schema({
   description: {
     type: String,
@@ -44,6 +29,21 @@ const logSchema = new mongoose.Schema({
   date: {
     type: Date,
     default: new Date(),
+  },
+});
+
+const usernameSchema = new mongoose.Schema({
+  username: {
+    type: String,
+    require: true,
+  },
+  count: {
+    type: Number,
+    default: 0,
+  },
+  log: {
+    type: [logSchema],
+    default: [logSchema],
   },
 });
 
