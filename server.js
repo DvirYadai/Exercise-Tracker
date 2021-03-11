@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const mongoose = require("mongoose");
 const app = express();
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -54,7 +55,8 @@ app.post("/api/exercise/add", (req, res) => {
   const exercise = {
     description: body.description,
     duration: Number(body.duration),
-    date: body.date === "" ? new Date() : body.date,
+    date:
+      body.date === "" ? new Date() : new Date(body.date.replace(/\//g, ",")),
   };
   User.findByIdAndUpdate(
     body.userId,
@@ -65,12 +67,73 @@ app.post("/api/exercise/add", (req, res) => {
       return res.status(200).json({
         _id: user._id,
         username: user.username,
-        date: exercise.date,
+        date: exercise.date.toDateString(),
         duration: exercise.duration,
         description: exercise.description,
       });
     })
     .catch((err) => res.status(500).send(err));
+});
+
+app.get("/api/exercise/log", (req, res) => {
+  const query = req.query;
+  if (!query.userId) {
+    return res.status(400).send("query parameters must include userId");
+  }
+  if (query.from && query.to && query.limit) {
+    User.findById(query.userId).then((res) => {
+      const logs = res.log;
+      logs.forEach((element) => {
+        if (
+          element.date.getTime() >= query.from.getTime() &&
+          element.date.getTime() <= query.to.getTime()
+        ) {
+          element.date = element.date.toDateString();
+          return element;
+        }
+      });
+      const limitLogs = [];
+      for (let i = 0; i < query.limit; i++) {
+        limitLogs.push(logs[i]);
+      }
+      return res.status(200).json({
+        id: userId,
+        username: res.username,
+        count: res.count,
+        log: limitLogs,
+      });
+    });
+  } else if (query.from && query.to && !query.limit) {
+    User.findById(query.userId).then((res) => {
+      const logs = res.log;
+      logs.forEach((element) => {
+        if (
+          element.date.getTime() >= query.from.getTime() &&
+          element.date.getTime() <= query.to.getTime()
+        ) {
+          element.date = element.date.toDateString();
+          return element;
+        }
+      });
+      return res.status(200).json({
+        id: userId,
+        username: res.username,
+        count: res.count,
+        log: limitLogs,
+      });
+    });
+  } else {
+    User.findById(query.userId).then((res) => {
+      const logs = res.log;
+      logs.forEach((element) => (element.date = element.date.toDateString()));
+      return res.status(200).json({
+        id: userId,
+        username: res.username,
+        count: res.count,
+        log: logs,
+      });
+    });
+  }
 });
 
 const listener = app.listen(process.env.PORT || 3000, () => {
