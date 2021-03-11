@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const uniqueValidator = require("mongoose-unique-validator");
 
 const url = process.env.MONGODB_URI;
 
@@ -17,35 +18,21 @@ mongoose
     console.log("error connecting to MongoDB:", error.message);
   });
 
-const logSchema = new mongoose.Schema({
-  description: {
-    type: String,
-    require: true,
-  },
-  duration: {
-    type: Number,
-    require: true,
-  },
-  date: {
-    type: Date,
-    default: new Date(),
-  },
-});
-
-const usernameSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
   username: {
     type: String,
     require: true,
+    unique: true,
   },
   count: {
     type: Number,
     default: 0,
   },
   log: {
-    type: [logSchema],
-    default: [logSchema],
+    type: [],
   },
 });
 
-module.exports = mongoose.model("UserName", usernameSchema);
-module.exports = mongoose.model("Logs", logSchema);
+userSchema.plugin(uniqueValidator);
+
+module.exports = mongoose.model("User", userSchema);
