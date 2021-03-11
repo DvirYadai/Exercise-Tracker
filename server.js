@@ -41,6 +41,29 @@ app.get("/api/exercise/users", (req, res) => {
     })
     .catch((err) => res.status(500).send(err));
 });
+
+app.post("/api/exercise/add", (req, res) => {
+  const body = req.body;
+  const exercise = {
+    description: body.description,
+    duration: Number(body.duration),
+    date: body.date === "" ? new Date() : body.date,
+  };
+  User.findByIdAndUpdate(
+    body.userId,
+    { $push: { log: exercise } },
+    { new: true }
+  ).then((user) => {
+    res.status(200).json({
+      _id: user._id,
+      username: user.username,
+      date: exercise.date,
+      duration: exercise.duration,
+      description: exercise.description,
+    });
+  });
+});
+
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log("Your app is listening on port " + listener.address().port);
 });
