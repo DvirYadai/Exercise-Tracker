@@ -129,23 +129,41 @@ app.get("/api/exercise/log", (req, res) => {
           count: logs.length,
           log: logs,
         });
+      } else if (query.limit) {
+        let logs = user.log;
+        logs = logs.map((element) => {
+          const newObj = {
+            description: element.description,
+            duration: element.duration,
+            date: element.date.toDateString(),
+          };
+          return newObj;
+        });
+        query.limit = query.limit > logs.length ? logs.length : query.limit;
+        for (let i = 0; i < query.limit; i++) {
+          limitLogs.push(logs[i]);
+        }
+        return res.status(200).json({
+          _id: mongoose.Types.ObjectId(query.userId),
+          username: user.username,
+          count: limitLogs.length,
+          log: limitLogs,
+        });
       } else {
-        User.findById(query.userId).then((user) => {
-          let logs = user.log;
-          logs = logs.map((element) => {
-            const newObj = {
-              description: element.description,
-              duration: element.duration,
-              date: element.date.toDateString(),
-            };
-            return newObj;
-          });
-          return res.status(200).json({
-            _id: mongoose.Types.ObjectId(query.userId),
-            username: user.username,
-            count: user.count,
-            log: logs,
-          });
+        let logs = user.log;
+        logs = logs.map((element) => {
+          const newObj = {
+            description: element.description,
+            duration: element.duration,
+            date: element.date.toDateString(),
+          };
+          return newObj;
+        });
+        return res.status(200).json({
+          _id: mongoose.Types.ObjectId(query.userId),
+          username: user.username,
+          count: user.count,
+          log: logs,
         });
       }
     })
