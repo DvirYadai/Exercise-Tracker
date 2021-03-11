@@ -124,13 +124,18 @@ app.get("/api/exercise/log", (req, res) => {
   } else {
     User.findById(query.userId).then((user) => {
       let logs = user.log;
-      logs = logs.map(
-        (element) => (element.date = element.date.toDateString())
-      );
+      logs = logs.map((element) => {
+        const newObj = {
+          description: element.description,
+          duration: element.duration,
+          date: element.date.toDateString(),
+        };
+        return newObj;
+      });
       return res.status(200).json({
         _id: query.userId,
-        username: res.username,
-        count: res.count,
+        username: user.username,
+        count: user.count,
         log: logs,
       });
     });
