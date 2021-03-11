@@ -55,7 +55,7 @@ app.post("/api/exercise/add", (req, res) => {
     { new: true }
   ).then((user) => {
     res.status(200).json({
-      _id: user._id,
+      _id: mongoose.Types.ObjectId(user._id),
       username: user.username,
       date: exercise.date,
       duration: exercise.duration,
