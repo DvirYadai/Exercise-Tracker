@@ -155,7 +155,7 @@ app.get("/api/exercise/log", (req, res) => {
         return res.status(200).json({
           _id: mongoose.Types.ObjectId(query.userId),
           username: user.username,
-          count: user.count,
+          count: logs.length,
           log: logs,
         });
       }
