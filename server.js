@@ -82,13 +82,18 @@ app.get("/api/exercise/log", (req, res) => {
   User.findById(query.userId)
     .then((user) => {
       let logs = user.log;
+      logs.sort(function (a, b) {
+        let dateA = a.date,
+          dateB = b.date;
+        return dateA - dateB;
+      });
       let limitLogs = [];
       if (query.from && query.to && query.limit) {
         logs = logs
           .filter(
             (element) =>
-              element.date.getTime() >= new Date(query.from).getTime() &&
-              element.date.getTime() <= new Date(query.to).getTime()
+              element.date >= new Date(query.from) &&
+              element.date <= new Date(query.to)
           )
           .map((obj) => {
             const newObj = {
@@ -112,8 +117,8 @@ app.get("/api/exercise/log", (req, res) => {
         logs = logs
           .filter(
             (element) =>
-              element.date.getTime() >= new Date(query.from).getTime() &&
-              element.date.getTime() <= new Date(query.to).getTime()
+              element.date >= new Date(query.from) &&
+              element.date <= new Date(query.to)
           )
           .map((obj) => {
             const newObj = {
