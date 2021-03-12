@@ -88,7 +88,7 @@ app.get("/api/exercise/log", (req, res) => {
         return dateA - dateB;
       });
       let limitLogs = [];
-      if (query.from && query.to && query.limit) {
+      if (query.from && query.to) {
         logs = logs
           .filter(
             (element) =>
@@ -103,39 +103,27 @@ app.get("/api/exercise/log", (req, res) => {
             };
             return newObj;
           });
-        query.limit = query.limit > logs.length ? logs.length : query.limit;
-        for (let i = 0; i < query.limit; i++) {
-          limitLogs.push(logs[i]);
+        if (query.limit) {
+          query.limit = query.limit > logs.length ? logs.length : query.limit;
+          for (let i = 0; i < query.limit; i++) {
+            limitLogs.push(logs[i]);
+          }
+          return res.status(200).json({
+            _id: mongoose.Types.ObjectId(query.userId),
+            username: user.username,
+            count: limitLogs.length,
+            log: limitLogs,
+          });
+        } else {
+          return res.status(200).json({
+            _id: mongoose.Types.ObjectId(query.userId),
+            username: user.username,
+            count: logs.length,
+            log: logs,
+          });
         }
-        return res.status(200).json({
-          _id: mongoose.Types.ObjectId(query.userId),
-          username: user.username,
-          count: limitLogs.length,
-          log: limitLogs,
-        });
-      } else if (query.from && query.to && !query.limit) {
-        logs = logs
-          .filter(
-            (element) =>
-              element.date >= new Date(query.from) &&
-              element.date <= new Date(query.to)
-          )
-          .map((obj) => {
-            const newObj = {
-              description: obj.description,
-              duration: obj.duration,
-              date: obj.date.toDateString(),
-            };
-            return newObj;
-          });
-        return res.status(200).json({
-          _id: mongoose.Types.ObjectId(query.userId),
-          username: user.username,
-          count: logs.length,
-          log: logs,
-        });
       } else if (query.limit) {
-        let logs = user.log;
+        logs = user.log;
         logs = logs.map((element) => {
           const newObj = {
             description: element.description,
@@ -155,7 +143,7 @@ app.get("/api/exercise/log", (req, res) => {
           log: limitLogs,
         });
       } else {
-        let logs = user.log;
+        logs = user.log;
         logs = logs.map((element) => {
           const newObj = {
             description: element.description,
